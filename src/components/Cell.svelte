@@ -7,6 +7,6 @@
 </script>
 
 <div
-  class="h-3 w-3 {cell ? 'bg-green-500' : 'bg-neutral-500'}"
+  class="h-3 w-3 {cell ? 'bg-neutral-600' : 'bg-neutral-400'}"
   on:click={() => dispatch('click')}
 />
