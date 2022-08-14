@@ -6,32 +6,40 @@
   let generation = 0
 
   function makeEmptyCells(x = 50, y = 30) {
-    return new Array(50 * 30).fill(false, 0)
+    const cells = []
+
+    for (let yIndex = 0; yIndex < y; yIndex++) {
+      for (let xIndex = 0; xIndex < x; xIndex++) {
+        if (cells[xIndex] === undefined) {
+          cells[xIndex] = []
+        }
+
+        cells[xIndex][yIndex] = false
+      }
+    }
+
+    return cells
   }
 
   function randomizeCells() {
-    cells = cells.map(() => Math.random() > 0.5)
+    cells = cells.map((cellRow) => cellRow.map(() => Math.random() > 0.5))
   }
 
   function clearBoard() {
     cells = makeEmptyCells()
   }
 
-  function handleCellClick(cellIndex: number) {
-    cells = cells.map((value, index) => {
-      return index === cellIndex ? !value : value
-    })
+  function handleCellClick(cellXIndex: number, cellYIndex: number) {
+    cells[cellYIndex][cellXIndex] = !cells[cellYIndex][cellXIndex]
   }
 </script>
 
 <main class="flex justify-center align-middle flex-col">
   <div class="grid grid-cols-board gap-1">
-    {#each cells as cell, cellIndex}
-      <Cell
-        {cell}
-        {cellIndex}
-        on:cellClick={(event) => handleCellClick(event.detail)}
-      />
+    {#each cells as cellRow, cellYIndex}
+      {#each cellRow as cell, cellXIndex}
+        <Cell {cell} on:click={() => handleCellClick(cellXIndex, cellYIndex)} />
+      {/each}
     {/each}
   </div>
   <div class="flex flex-col">
