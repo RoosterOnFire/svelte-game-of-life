@@ -16,7 +16,7 @@
           cells[xIndex] = []
         }
 
-        cells[xIndex][yIndex] = false
+        cells[yIndex][xIndex] = false
       }
     }
 
@@ -25,6 +25,7 @@
 
   function randomizeCells() {
     cells = cells.map((cellRow) => cellRow.map(() => Math.random() > 0.5))
+    cellsGeneration = 0
   }
 
   function clearBoard() {
@@ -36,6 +37,10 @@
   }
 
   function handleCellClick(cellXIndex: number, cellYIndex: number) {
+    if (gameLoopState === 'start') {
+      return
+    }
+
     cells[cellYIndex][cellXIndex] = !cells[cellYIndex][cellXIndex]
   }
 
@@ -53,6 +58,54 @@
 
   function gameLoop() {
     cellsGeneration += 1
+
+    const newCells = []
+
+    for (let yIndex = 0; yIndex < 30; yIndex++) {
+      for (let xIndex = 0; xIndex < 50; xIndex++) {
+        const topCells = cells[yIndex - 1]
+        const hasTop = topCells !== undefined
+
+        const bottomCells = cells[yIndex + 1]
+        const hasBottom = bottomCells !== undefined
+
+        const currentCellNeigbours = [
+          hasTop ? topCells[xIndex - 1] : false,
+          hasTop ? topCells[xIndex] : false,
+          hasTop ? topCells[xIndex + 1] : false,
+          cells[yIndex][xIndex - 1],
+          cells[yIndex][xIndex + 1],
+          hasBottom ? bottomCells[xIndex - 1] : false,
+          hasBottom ? bottomCells[xIndex] : false,
+          hasBottom ? bottomCells[xIndex + 1] : false,
+        ]
+
+        const neighboursAlive = currentCellNeigbours.filter(
+          (neighbour) => neighbour === true
+        ).length
+
+        let newCellAlive = false
+
+        const isCurrentCellAlive = cells[yIndex][xIndex] === true
+        if (isCurrentCellAlive) {
+          // Any live cell with fewer than two live neighbours dies, as if by underpopulation.
+          // Any live cell with more than three live neighbours dies, as if by overpopulation.
+          // Any live cell with two or three live neighbours lives on to the next generation.
+          newCellAlive = neighboursAlive === 2 || neighboursAlive === 3
+        } else {
+          // Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+          newCellAlive = neighboursAlive === 3
+        }
+
+        if (newCells[yIndex] === undefined) {
+          newCells[yIndex] = []
+        }
+
+        newCells[yIndex][xIndex] = newCellAlive
+      }
+    }
+
+    cells = newCells
   }
 </script>
 
