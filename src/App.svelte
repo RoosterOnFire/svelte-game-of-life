@@ -3,7 +3,9 @@
   import Button from './components/Button.svelte'
 
   let cells = makeEmptyCells()
-  let generation = 0
+  let cellsGeneration: number = 0
+  let gameLoopState: 'stop' | 'start' = 'stop'
+  let gameLoopInterval: NodeJS.Timer | undefined = undefined
 
   function makeEmptyCells(x = 50, y = 30) {
     const cells = []
@@ -26,11 +28,31 @@
   }
 
   function clearBoard() {
+    clearInterval(gameLoopInterval)
+    gameLoopInterval = undefined
     cells = makeEmptyCells()
+    cellsGeneration = 0
+    gameLoopState = 'stop'
   }
 
   function handleCellClick(cellXIndex: number, cellYIndex: number) {
     cells[cellYIndex][cellXIndex] = !cells[cellYIndex][cellXIndex]
+  }
+
+  function handleGameLoopClick() {
+    if (gameLoopState === 'stop') {
+      gameLoopState = 'start'
+      gameLoopInterval = setInterval(() => {
+        gameLoop()
+      }, 200)
+    } else if (gameLoopState === 'start') {
+      clearInterval(gameLoopInterval)
+      gameLoopState = 'stop'
+    }
+  }
+
+  function gameLoop() {
+    cellsGeneration += 1
   }
 </script>
 
@@ -43,8 +65,8 @@
     {/each}
   </div>
   <div class="flex flex-col">
-    <div class="mx-auto">Generation number: {generation}</div>
-    <Button>Start/Stop/Resume</Button>
+    <div class="mx-auto">Generation number: {cellsGeneration}</div>
+    <Button on:click={handleGameLoopClick}>Start/Stop/Resume</Button>
     <Button on:click={randomizeCells}>Randomize</Button>
     <Button on:click={clearBoard}>Clear</Button>
   </div>
