@@ -2,7 +2,11 @@
 module.exports = {
   content: ['./src/**/*.{html,js,svelte,ts}'],
   theme: {
-    extend: {},
+    extend: {
+      gridTemplateColumns: {
+        board: 'repeat(50, minmax(0, 1fr))',
+      },
+    },
   },
   plugins: [],
 }
