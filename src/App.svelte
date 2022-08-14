@@ -1,6 +1,7 @@
 <script lang="ts">
-  import Cell from './components/Cell.svelte'
+  import { onMount } from 'svelte'
   import Button from './components/Button.svelte'
+  import Cell from './components/Cell.svelte'
 
   let cells = makeEmptyCells()
   let cellsGeneration: number = 0
@@ -44,7 +45,7 @@
     cells[cellYIndex][cellXIndex] = !cells[cellYIndex][cellXIndex]
   }
 
-  function handleGameLoopClick() {
+  function manageGameLoop() {
     if (gameLoopState === 'stop') {
       gameLoopState = 'start'
       gameLoopInterval = setInterval(() => {
@@ -107,6 +108,11 @@
 
     cells = newCells
   }
+
+  onMount(() => {
+    randomizeCells()
+    manageGameLoop()
+  })
 </script>
 
 <main class="flex justify-center align-middle flex-col">
@@ -119,7 +125,7 @@
   </div>
   <div class="flex flex-col">
     <div class="mx-auto">Generation number: {cellsGeneration}</div>
-    <Button on:click={handleGameLoopClick}>Start/Stop/Resume</Button>
+    <Button on:click={manageGameLoop}>Start/Stop/Resume</Button>
     <Button on:click={randomizeCells}>Randomize</Button>
     <Button on:click={clearBoard}>Clear</Button>
   </div>
